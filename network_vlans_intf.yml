@@ -1,0 +1,57 @@
+---
+# features:
+#   VLAN database
+#   L2 intf 
+#   intf description
+# platforms:
+#   Cisco IOS switch
+
+- name: run role network-basic for VLANs
+  hosts: all
+  gather_facts: no
+  vars: 
+    - vlan_id: 1
+    - vlan_name: default
+    - intf_name: 'Ethernet0/1'
+    - intf_description: none
+
+  tasks:
+  
+  - name: "set VLAN database for {{ vlan_name }}:{{ vlan_id }}"
+    cisco.ios.ios_vlans:
+      config:
+        - name: "{{ vlan_name }}"
+          vlan_id: "{{ vlan_id }}"
+          state: active
+          shutdown: disabled
+      state: merged
+    register: _vlans
+    notify: save 
+  
+  - name: "set L2 interface for {{ intf_name }}"
+    cisco.ios.ios_l2_interfaces:
+      config:
+        - name: "{{ intf_name }}"
+          mode: access
+          access:
+            vlan: "{{ vlan_id }}"
+      state: merged
+    register: _l2
+    notify: save 
+  
+  - name: "set interface description for {{ intf_name }}"
+    cisco.ios.ios_interfaces:
+      config:
+        - name: "{{ intf_name }}"
+          description: "{{ intf_description }}"
+          enabled: yes
+      state: merged
+    register: _intf
+    notify: save
+  
+  handlers:
+  - name: save
+    cisco.ios.ios_command:
+      commands:
+      - write memory
+    
