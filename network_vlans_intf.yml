@@ -6,8 +6,8 @@
 # platforms:
 #   Cisco IOS switch
 
-- name: run role network-basic for VLANs
-  hosts: all
+- name: playbook for IOS L2 interface configuration
+  hosts: iosswitch
   gather_facts: no
   vars: 
     - vlan_id: 1
