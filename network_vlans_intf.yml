@@ -9,6 +9,7 @@
 - name: playbook for IOS L2 interface configuration
   hosts: iosswitch
   gather_facts: no
+  become: true
   vars: 
     - vlan_id: 1
     - vlan_name: default
